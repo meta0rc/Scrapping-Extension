@@ -19,9 +19,10 @@ const divConfigs = {
             width: 100%;
             padding: 5%;
             display: flex;
-            position: fixed;
+            position: absolute;
+            overflow: scroll;
             font-size: 1.2em;
-            background: #505050;
+            background: #333;
             /* text-align: center; */
             color: #fff;
             top: 0;
@@ -77,8 +78,14 @@ div.addEventListener('click', ()=> {
 
         let index = 0;
 
-        base = `https://www.google.com/search?q=${search}&rlz=1C1GCEU_pt-BRBR965BR965&ei=WkRsYtejEsOV0AaroaqoCw&start=${index}&sa=N&ved=2ahUKEwjXuOuviLr3AhXDCtQKHauQCrUQ8tMDegQIARA_&biw=1366&bih=625&dpr=1`
-        
+        if(!localStorage.getItem('index') || localStorage.getItem('index') == NaN){
+
+            localStorage.setItem('index', index)
+
+        } 
+
+        arr = []
+
         a.forEach(l => {
     
             link = l.getAttribute('href')
@@ -87,22 +94,69 @@ div.addEventListener('click', ()=> {
         
                 if(link.includes(search) && !link.includes('webcache') && !link.includes('view')){
                     
-                    popup.innerHTML += link + '<br>'
 
-                    arr = []
-
+                    arr.push(link)
                    
+                    // localStorage.setItem('links')
 
-                    localStorage.setItem('links', ...link)
-
-                    
-                    //window.open(base, 'target="_blank"')
-                    
                 }
                 
             }
             
         })
+
+        arr.push(localStorage.getItem('links'))
+
+        localStorage.setItem('links', JSON.stringify(arr))
+
+        aux = parseInt(localStorage.getItem('index')) + 10
+
+        localStorage.setItem('index', aux.toString());
+
+
+        base = `https://www.google.com/search?q=${t}&rlz=1C1GCEU_pt-BRBR965BR965&ei=WkRsYtejEsOV0AaroaqoCw&start=${aux}&sa=N&ved=2ahUKEwjXuOuviLr3AhXDCtQKHauQCrUQ8tMDegQIARA_&biw=1366&bih=625&dpr=1`
+        
+
+
+        if(document.body.innerText.includes('não encontrou nenhum documento correspondente')){
+
+            valores = localStorage.getItem('links');
+
+            vals = valores.replace(/[\\"]/g, '');
+
+            novoarray = vals.split(',')
+
+            novoarray.forEach(n => {
+                
+                t = n.replace('[', '')
+                x = t.replace('null', '')
+                j = x.replace(']', '')
+                h = j.replace('[', '')
+                
+                popup.innerHTML += h + '<br>'
+
+            })
+            localStorage.clear();
+
+        }
+        else {
+
+            location.href = base;
+
+        }
+
+
+        //  {
+
+        //     valor = JSON.parse(localStorage.getItem("links"))
+
+        //     arr.push(valor)
+
+        //     localStorage.setItem('links', JSON.stringify(arr))
+
+        // }
+
+        
         
     
 })
